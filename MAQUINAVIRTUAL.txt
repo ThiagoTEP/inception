@@ -1,0 +1,100 @@
+Iso - Debian -> https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/
+
+
+===== CODIGOS A CORRER =====
+docker ps
+docker ps -a (aparece os que rodaram)
+docker build 
+
+docker run hello-world
+===processo vivo==
+
+docker run -it ubunto bash
+
+docker stop ID
+docker start ID
+docker exec -it ID bash
+
+docker rm ID (APAGA O ps -a)
+docker images
+docker rmi (ID nome)
+
+docker exec -it mariadb mysql -u varisdb -p
+
+docker network ls
+
+docker network inspect inception_inception
+
+docker volume ls
+docker volume inspect wp_data
+
+docker stop $(docker ps -qa); 
+docker rm $(docker ps -qa); 
+docker rmi -f $(docker images -qa); 
+docker volume rm $(docker volume ls -q); 
+docker network rm $(docker network ls -q)
+
+======= começo de avaliacao ===
+
+mkdir -p secrets
+echo "varisRootPass42." > secrets/db_root_password.txt
+echo "varisDbPass42." > secrets/db_password.txt
+printf "WP_ADMIN_PASSWORD=varisMasterPass42.\nWP_USER_PASSWORD=varisUserPass42.\n" > secrets/credentials.txt
+
+
+rodar a limpeza
+
+docker stop $(docker ps -qa); docker rm $(docker ps -qa); docker rmi -f $(docker images -qa); docker volume rm $(docker volume ls -q); docker network rm $(docker network ls -q) 2>/dev/null
+
+make
+
+# README / docs (só confirmar que existem)
+head -n 1 README.md
+ls USER_DOC.md DEV_DOC.md
+
+# Docker Network
+cat srcs/docker-compose.yml
+docker network ls
+docker network inspect inception_inception
+
+# NGINX / TLS — porta 80 falha, 443 funciona
+curl http://thevaris.42.fr
+curl -k https://thevaris.42.fr
+openssl s_client -connect thevaris.42.fr:443 </dev/null
+# [browser: abrir https://thevaris.42.fr]
+
+# WordPress + volume
+docker volume ls
+docker volume inspect inception_wp_data
+# [browser: comentar como variseditor]
+# [browser: login /wp-admin como varismaster, editar página, confirmar no site]
+
+# MariaDB + volume
+docker volume inspect inception_db_data
+docker exec -it mariadb mysql -u varisdb -p
+ou
+docker exec -it mariadb mysql -u varisdb -p wordpress
+
+
+USE wordpress;
+SHOW TABLES;
+
+docker exec -it mariadb mysql -u root -p
+
+CREATE DATABASE teste;
+SHOW DATABASES;
+DROP DATABASE teste;
+exit
+
+# Persistence
+sudo reboot
+cd ~/Documents/inception/inception
+make
+docker compose -f srcs/docker-compose.yml ps
+# [browser: confirmar que o comentário/edição continuam lá]
+
+# Configuration modification (exemplo: mudar porta do nginx para 8443)
+nano srcs/docker-compose.yml
+# trocar "443:443" para "8443:443" na linha ports do nginx
+docker compose -f srcs/docker-compose.yml up -d --build
+curl -k https://thevaris.42.fr:8443
