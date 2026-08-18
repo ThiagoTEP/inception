@@ -1,0 +1,12 @@
+# Credentials — must never be committed (subject: instant failure)
+secrets/
+inception_codigo_completo.txt
+
+# Local study material (contains the real passwords in the examples)
+ROTEIRO_DEFESA.md
+MANUAL_VM.md
+MAQUINAVIRTUAL.txt
+
+# Local copies of the subject / evaluation sheet
+inception_subject.txt
+inception_avaliacao.txt
